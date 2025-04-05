@@ -1,0 +1,61 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using Microsoft.AspNetCore.Identity
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vehicle Rental Management System</title>
+
+    <!-- Link to external CSS file -->
+    <link href="./css/site.css" rel="stylesheet" />
+
+    <!-- Bootstrap CDN -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+
+    
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="user-info">
+            @if (User.Identity.IsAuthenticated)
+            {
+                <div>Hello, @User.Identity.Name</div>
+            }
+            else
+            {
+                <div>Not logged in</div>
+            }
+        </div>
+
+        <ul class="nav flex-column px-3 pt-3">
+            <li class="nav-item">
+                <a asp-controller="Home" asp-action="Index" class="nav-link">Home</a>
+            </li>
+            <li class="nav-item">
+                <a asp-controller="PlaceHolder" asp-action="PlaceHolder" class="nav-link">Books</a>
+            </li>
+            <li class="nav-item">
+                <a asp-controller="PlaceHolder" asp-action="PlaceHolder" class="nav-link">Readers</a>
+            </li>
+            <li class="nav-item">
+                <a asp-controller="PlaceHolder" asp-action="PlaceHolder" class="nav-link">Borrowing</a>
+            </li>
+            <li class="nav-item">
+                <a asp-controller="App" asp-action="Logout" class="nav-link text-danger">Logout</a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+        @RenderBody()
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

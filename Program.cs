@@ -37,6 +37,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 });
 
 var app = builder.Build();
+app.UseStaticFiles();  
 // Default route to the Login action
 app.MapControllerRoute(
     name: "default",

@@ -1,0 +1,20 @@
+﻿
+.form-control {
+    width: 300px;
+    border: 2px solid #ced4da;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-container {
+    max-width: 450px;
+    padding: 25px;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+    background-color: #f8f9fa;
+}
+
+

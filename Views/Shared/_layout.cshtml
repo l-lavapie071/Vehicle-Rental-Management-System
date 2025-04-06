@@ -9,7 +9,7 @@
     <title>Vehicle Rental Management System</title>
 
     <!-- Link to external CSS file -->
-    <link href="./css/site.css" rel="stylesheet" />
+    <link href="~/css/site.css" rel="stylesheet" />
 
     <!-- Bootstrap CDN -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
@@ -22,7 +22,7 @@
         <div class="user-info">
             @if (User.Identity.IsAuthenticated)
             {
-                <div>Hello, @User.Identity.Name</div>
+                <div>@User.Identity.Name</div>
             }
             else
             {
@@ -35,7 +35,7 @@
                 <a asp-controller="Home" asp-action="Index" class="nav-link">Home</a>
             </li>
             <li class="nav-item">
-                <a asp-controller="PlaceHolder" asp-action="PlaceHolder" class="nav-link">Books</a>
+                <a asp-controller="Vehicle" asp-action="VehicleList" class="nav-link">Vehicles</a>
             </li>
             <li class="nav-item">
                 <a asp-controller="PlaceHolder" asp-action="PlaceHolder" class="nav-link">Readers</a>

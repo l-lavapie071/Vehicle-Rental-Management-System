@@ -21,6 +21,10 @@ namespace Vehicle_Rental_Management_System.Controllers
         [Route("/")]
         public IActionResult Login()
         {
+            if (User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("index", "Home");
+            }
             return View();
         }
 

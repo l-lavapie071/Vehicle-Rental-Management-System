@@ -8,5 +8,6 @@ namespace Vehicle_Rental_Management_System.Data
         public App_Dbcontext(DbContextOptions<App_Dbcontext> options) : base(options)
         {
         }
+        public DbSet<Vehicle> Vehicles { get; set; }
     }
 }

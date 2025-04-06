@@ -1,0 +1,78 @@
+﻿@{
+    Layout = "_Layout";
+}
+@model Vehicle_Rental_Management_System.Models.Vehicle
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+
+    <div class="container mt-4">
+        <h2>Add Vehicle</h2>
+
+        <form asp-action="AddVehicle" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label asp-for="Make" class="control-label">Make</label>
+                <input asp-for="Make" class="form-control" />
+                <span asp-validation-for="Make" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Model" class="control-label">Model</label>
+                <input asp-for="Model" class="form-control" />
+                <span asp-validation-for="Model" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Year" class="control-label">Year</label>
+                <input asp-for="Year" type="number" class="form-control" />
+                <span asp-validation-for="Year" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="LicensePlate" class="control-label">License Plate</label>
+                <input asp-for="LicensePlate" class="form-control" />
+                <span asp-validation-for="LicensePlate" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Mileage" class="control-label">Mileage</label>
+                <input asp-for="Mileage" type="number" class="form-control" />
+                <span asp-validation-for="Mileage" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="RentalPricePerDay" class="control-label">Rental Price Per Day</label>
+                <input asp-for="RentalPricePerDay" type="number" step="0.01" class="form-control" />
+                <span asp-validation-for="RentalPricePerDay" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Description" class="control-label">Description</label>
+                <textarea asp-for="Description" class="form-control"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="IsAvailable" class="control-label">Available</label>
+                <input asp-for="IsAvailable" type="checkbox" class="form-check-input ms-2" checked />
+            </div>
+
+            <div class="form-group">
+                <label class="control-label">Upload Photo</label>
+                <input type="file" name="ImageFile" class="form-control-file" />
+            </div>
+
+            <div class="form-group mt-3">
+                <input type="submit" value="Save" class="btn btn-primary" />
+                <a asp-controller="vehicle" asp-action="VehicleList" class="btn btn-secondary">Back</a>
+            </div>
+        </form>
+    </div>
+
+</body>
+</html>

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Vehicle_Rental_Management_System.Data;
 
@@ -11,9 +12,11 @@ using Vehicle_Rental_Management_System.Data;
 namespace Vehicle_Rental_Management_System.Migrations
 {
     [DbContext(typeof(App_Dbcontext))]
-    partial class App_DbcontextModelSnapshot : ModelSnapshot
+    [Migration("20250407051700_updateReservationDates")]
+    partial class updateReservationDates
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -1,0 +1,60 @@
+﻿@{
+    Layout = "_Layout";
+}
+@using Vehicle_Rental_Management_System.Models
+@model List<Customer>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Reader List</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-4">
+        <h2 class="mb-3">Reader List</h2>
+        @* <!-- Search Form -->
+        <form asp-controller="customer" asp-action="Search" method="get" class="mb-3">
+            <div class="input-group">
+                <input type="text" name="query" class="form-control" placeholder="Search by Name..." />
+                <button type="submit" class="btn btn-outline-primary">Search</button>
+            </div>
+        </form> *@
+
+        <table class="table table-hover table-striped">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>PhoneNumber</th>
+                    <th>Address</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var cust in Model)
+                {
+                    <tr>
+                        <td>@cust.Id</td>
+                        <td>
+                            <a asp-controller="customer" asp-action="CustomerDetails" asp-route-id="@cust.Id">@cust.FirstName @cust.LastName</a>
+                        </td>
+                        <td>@cust.Email</td>
+                        <td>@cust.PhoneNumber</td>
+                        <td>@cust.Address</td>
+                        <td>
+                            <a asp-controller="customer" asp-action="EditCustomer" asp-route-id="@cust.Id">Edit</a> |
+                            <form asp-controller="customer" asp-action="DeleteCustomer" asp-route-id="@cust.Id" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this customer?');">
+                                <button type="submit" class="btn btn-link p-0 m-0 align-baseline">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <a class="btn btn-primary" asp-controller="customer" asp-action="AddCustomer">Add</a>
+    </div>
+</body>
+</html>

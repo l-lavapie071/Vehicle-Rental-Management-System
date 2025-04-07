@@ -14,59 +14,62 @@
 </head>
 <body>
     <div class="container mt-4">
-        <h2 class="mb-3">Vehicle List</h2>
-        <!-- Search Form -->
-        @* <form asp-controller="book" asp-action="Search" method="get" class="mb-3">
-            <div class="input-group">
-                <input type="text" name="query" class="form-control" placeholder="Search by title, author, or genre..." />
-                <button type="submit" class="btn btn-outline-primary">Search</button>
-            </div>
-        </form> *@
-        <table class="table table-bordered">
-            <thead class="table-dark">
-                <tr>
-                    <th>Id</th>
-                    <th>Make</th>
-                    <th>Model</th>
-                    <th>Year</th>
-                    <th>License Plate</th>
-                    <th>Mileage</th>
-                    <th>Rental Price Per Day</th>
-                    <th>Description</th>
-                    <th>Availability</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var Vehicle in Model)
-                {
-                    <tr>
-                        <td>@Vehicle.Id</td>
-                        <td>@Vehicle.Make</td>
-                        <td>@Vehicle.Model</td>
-                        <td>@Vehicle.Year</td>
-                        <td>@Vehicle.LicensePlate</td>
-                        <td>@Vehicle.Mileage.ToString("N0") km</td>
-                        <td>@Vehicle.RentalPricePerDay.ToString("C")</td>
-                        <td>@Vehicle.Description</td>
-                        <td>
-                            @if (Vehicle.IsAvailable)
-                            {
-                                <span class="badge bg-success">Available</span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-danger">Not Available</span>
-                            }
-                        </td>
-                        <td>
-                            <a asp-controller="vehicle" asp-action="VehicleDetails" asp-route-id="@Vehicle.Id">View Details</a>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-        <a class="btn btn-primary" asp-controller="vehicle" asp-action="AddVehicle">Add</a>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0">Vehicle List</h2>
+            <!-- Add Vehicle Button -->
+            <a class="btn btn-primary" asp-controller="vehicle" asp-action="AddVehicle">Add Vehicle</a>
+        </div>
+
+        <div class="row g-4">
+            @foreach (var Vehicle in Model)
+            {
+                <div class="col-12">
+                    <a href="@Url.Action("VehicleDetails", "vehicle", new { id = Vehicle.Id })" class="text-decoration-none">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-header bg-secondary text-white position-relative">
+                                <p class="card-title mb-0">@Vehicle.Make @Vehicle.Model (@Vehicle.Year)</p>
+                                <!-- <a class="btn btn-outline-light btn-sm position-absolute top-0 end-0" asp-controller="vehicle" asp-action="VehicleDetails" asp-route-id="@Vehicle.Id">View Details</a>-->
+                            </div>
+
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-2 d-flex justify-content-center align-items-center">
+                                        <img src="@Vehicle.ImageUrl" class="img-fluid rounded-start" alt="@Vehicle.Make @Vehicle.Model" style="max-height: 200px; object-fit: cover;">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <p><strong>Description:</strong><br />@Vehicle.Description</p>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <p><strong>Mileage:</strong><br />@Vehicle.Mileage.ToString("N0") km</p>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <p><strong>Price/Day:</strong><br />@Vehicle.RentalPricePerDay.ToString("C")</p>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <p><strong>License Plate:</strong><br />@Vehicle.LicensePlate</p>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <p>
+                                            <strong>Availability:</strong><br />
+                                            @if (Vehicle.IsAvailable)
+                                            {
+                                                <span class="badge bg-success">Available</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-danger">Not Available</span>
+                                            }
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+
+
     </div>
 </body>
 </html>

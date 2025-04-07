@@ -37,7 +37,7 @@ namespace Vehicle_Rental_Management_System.Models
 
         public bool IsAvailable { get; set; }  // Availability status for rental
 
-        public string ImageUrl { get; set; }  // Optional URL for vehicle image
+        public string? ImageUrl { get; set; }  // Optional URL for vehicle image
     }
 }
 

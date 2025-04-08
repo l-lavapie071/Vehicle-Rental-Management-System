@@ -53,19 +53,29 @@
                         <p><strong>Phone:</strong> @Model.Customer.PhoneNumber</p>
 
                         <hr />
-                        <h5 class="mb-2">Vehicle Info</h5>
-                        <p><strong>Make:</strong> @Model.Vehicle.Make</p>
-                        <p><strong>Model:</strong> @Model.Vehicle.Model</p>
-                        <p><strong>Year:</strong> @Model.Vehicle.Year</p>
-                        <p><strong>License Plate:</strong> @Model.Vehicle.LicensePlate</p>
-                        <p><strong>Mileage:</strong> @Model.Vehicle.Mileage.ToString("N0") km</p>
-                        <p><strong>Description:</strong> @Model.Vehicle.Description</p>
+                        <div class="row">
+                            <!-- Left Column: Vehicle Info -->
+                            <div class="col-md-3">
+                                <h5 class="mb-2">Vehicle Info</h5>
+                                <p><strong>Make:</strong> @Model.Vehicle.Make</p>
+                                <p><strong>Model:</strong> @Model.Vehicle.Model</p>
+                                <p><strong>Year:</strong> @Model.Vehicle.Year</p>
+                                <p><strong>License Plate:</strong> @Model.Vehicle.LicensePlate</p>
+                                <p><strong>Mileage:</strong> @Model.Vehicle.Mileage.ToString("N0") km</p>
+                                <p><strong>Description:</strong> @Model.Vehicle.Description</p>
+                            </div>
+
+                            <!-- Right Column: Vehicle Image -->
+                            <div class="col-md-5 d-flex align-items-center justify-content-center">
+                                <img src="@Model.Vehicle.ImageUrl" class="img-fluid rounded-start" alt="@Model.Vehicle.Make @Model.Vehicle.Model" style="max-height: 300px; object-fit: cover;">
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <a asp-controller="reservation" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary mt-3">Edit</a>
+        <a asp-controller="reservation" asp-action="EditReservation" asp-route-id="@Model.Id" class="btn btn-primary mt-3">Edit</a>
         <a href="javascript:history.back()" class="btn btn-secondary mt-3">Back</a>
     </div>
 

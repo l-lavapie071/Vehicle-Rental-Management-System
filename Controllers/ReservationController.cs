@@ -129,6 +129,133 @@ namespace Vehicle_Rental_Management_System.Controllers
 
             return RedirectToAction("ReservationList");
         }
+        [HttpGet("Edit/{id}")]
+        public async Task<IActionResult> EditReservation(int id)
+        {
+            var reservation = await _context.Reservations
+                                             .Include(r => r.Customer)
+                                             .Include(r => r.Vehicle)
+                                             .FirstOrDefaultAsync(r => r.Id == id);
+
+            if (reservation == null)
+            {
+                return NotFound();
+            }
+
+            // Populate the ViewModel with necessary data
+            var viewModel = new ReservationFormVM
+            {
+                Reservation = reservation,
+                Customers = _context.Customers
+                    .Select(c => new SelectListItem
+                    {
+                        Value = c.Id.ToString(),
+                        Text = $"{c.FirstName} {c.LastName}"
+                    }).ToList(),
+                Vehicles = _context.Vehicles
+                    .Where(v => v.IsAvailable || v.Id == reservation.VehicleId) // Filter available vehicles
+                    .Select(v => new SelectListItem
+                    {
+                        Value = v.Id.ToString(),
+                        Text = $"{v.Make} {v.Model} ({v.LicensePlate})"
+                    })
+                    .ToList()
+            };
+
+            return View(viewModel);
+        }
+        [HttpPost("Edit/{id}")]
+        public async Task<IActionResult> EditReservation(int id, ReservationFormVM viewModel)
+        {
+            if (id != viewModel.Reservation.Id)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                var reservation = await _context.Reservations
+                    .Include(r => r.Vehicle)
+                    .FirstOrDefaultAsync(r => r.Id == id);
+
+                if (reservation == null)
+                {
+                    return NotFound();
+                }
+
+                var oldVehicle = reservation.Vehicle;
+                var newVehicle = await _context.Vehicles.FirstOrDefaultAsync(v => v.Id == viewModel.Reservation.VehicleId);
+
+                // Check if vehicle is changed
+                if (oldVehicle.Id != newVehicle.Id)
+                {
+                    oldVehicle.IsAvailable = true;
+
+
+                    // Set the new vehicle as not available
+                    newVehicle.IsAvailable = false;
+
+
+                    if (viewModel.Reservation.IsReturned)
+                    {
+                        newVehicle.IsAvailable = true;
+                    }
+                    else {
+                        newVehicle.IsAvailable = false;
+                    }
+                    // Update the vehicles in the database
+                    _context.Update(oldVehicle);
+                    _context.Update(newVehicle);
+                }
+                else {
+                    if (viewModel.Reservation.IsReturned)
+                    {
+                        oldVehicle.IsAvailable = true;
+                        
+                    }
+                    else {
+                        oldVehicle.IsAvailable = false;
+                    }
+                    _context.Update(oldVehicle);
+                }
+
+                
+
+                // Update the reservation details
+                reservation.CustomerId = viewModel.Reservation.CustomerId;
+                reservation.VehicleId = viewModel.Reservation.VehicleId;
+                reservation.StartDate = viewModel.Reservation.StartDate;
+                reservation.EndDate = viewModel.Reservation.EndDate;
+                reservation.IsReturned = viewModel.Reservation.IsReturned;
+
+                // Update the reservation in the database
+                _context.Update(reservation);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction(nameof(ReservationList)); // Redirect to the reservation list
+            }
+
+            // Repopulate the SelectLists in case of validation errors
+            viewModel.Customers = _context.Customers
+                .Select(c => new SelectListItem
+                {
+                    Value = c.Id.ToString(),
+                    Text = $"{c.FirstName} {c.LastName}"
+                }).ToList();
+
+            viewModel.Vehicles = _context.Vehicles
+                .Where(v => v.IsAvailable || v.Id == viewModel.Reservation.VehicleId) // Filter available vehicles
+                .Select(v => new SelectListItem
+                {
+                    Value = v.Id.ToString(),
+                    Text = $"{v.Make} {v.Model} ({v.LicensePlate})"
+                })
+                .ToList();
+
+            return View(viewModel);
+        }
+
+
 
 
     }

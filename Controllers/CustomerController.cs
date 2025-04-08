@@ -56,9 +56,9 @@ namespace Vehicle_Rental_Management_System.Controllers
         }
 
         [HttpGet("Edit/{id}")]
-        public IActionResult EditCustomer(int id)
+        public async Task<IActionResult> EditCustomer(int id)
         {
-            var cust = _context.Customers.Find(id);
+            var cust = await _context.Customers.FindAsync(id);
             if (cust == null)
             {
                 return NotFound();

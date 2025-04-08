@@ -16,56 +16,52 @@
         <form asp-action="Edit" asp-route-id="@Model.Id" method="post" enctype="multipart/form-data">
             <div class="card">
                 <div class="row g-0">
-                    <div class="col-md-4 d-flex justify-content-center align-items-center">
-                        @* Display the image with fixed size and alignment *@
-                        <img src="@Model.ImageUrl" class="img-fluid rounded-start" alt="@Model.Make @Model.Model" style="max-height: 200px; object-fit: cover;">
-                    </div>
-                    <div class="col-md-8">
+                    <div class="col-md-8 mx-auto">
                         <div class="card-body">
                             <div class="mb-3">
                                 <label for="Make" class="form-label">Make</label>
-                                <input type="text" class="form-control" id="Make" name="Make" value="@Model.Make" required />
+                                <input type="text" class="form-control w-100" id="Make" name="Make" value="@Model.Make" required />
                             </div>
                             <div class="mb-3">
                                 <label for="Model" class="form-label">Model</label>
-                                <input type="text" class="form-control" id="Model" name="Model" value="@Model.Model" required />
+                                <input type="text" class="form-control w-100" id="Model" name="Model" value="@Model.Model" required />
                             </div>
                             <div class="mb-3">
                                 <label for="Year" class="form-label">Year</label>
-                                <input type="number" class="form-control" id="Year" name="Year" value="@Model.Year" required />
+                                <input type="number" class="form-control w-100" id="Year" name="Year" value="@Model.Year" required />
                             </div>
                             <div class="mb-3">
                                 <label for="LicensePlate" class="form-label">License Plate</label>
-                                <input type="text" class="form-control" id="LicensePlate" name="LicensePlate" value="@Model.LicensePlate" readonly />
+                                <input type="text" class="form-control w-100" id="LicensePlate" name="LicensePlate" value="@Model.LicensePlate" readonly />
                             </div>
                             <div class="mb-3">
                                 <label for="Mileage" class="form-label">Mileage (km)</label>
-                                <input type="number" class="form-control" id="Mileage" name="Mileage" value="@Model.Mileage" required />
+                                <input type="number" class="form-control w-100" id="Mileage" name="Mileage" value="@Model.Mileage" required />
                             </div>
                             <div class="mb-3">
                                 <label for="RentalPricePerDay" class="form-label">Rental Price per Day</label>
-                                <input type="number" class="form-control" id="RentalPricePerDay" name="RentalPricePerDay" value="@Model.RentalPricePerDay" required />
+                                <input type="number" class="form-control w-100" id="RentalPricePerDay" name="RentalPricePerDay" value="@Model.RentalPricePerDay" required />
                             </div>
                             <div class="mb-3">
                                 <label for="Description" class="form-label">Description</label>
-                                <textarea class="form-control" id="Description" name="Description" rows="3">@Model.Description</textarea>
+                                <textarea class="form-control w-100" id="Description" name="Description" rows="3">@Model.Description</textarea>
                             </div>
-                            
                             <div class="mb-3">
                                 <label for="IsAvailable" class="form-label">Availability</label>
                                 <select class="form-select" id="IsAvailable" asp-for="IsAvailable">
-                                    <option value="true" >Available</option>
+                                    <option value="true">Available</option>
                                     <option value="false">Not Available</option>
                                 </select>
                             </div>
                             <div class="mb-3">
                                 <label for="Image" class="form-label">Upload New Image (Optional)</label>
-                                <input type="file" class="form-control" id="Image" name="Image" />
+                                <input type="file" class="form-control w-100" id="Image" name="Image" />
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+
 
             <button type="submit" class="btn btn-primary mt-3">Save Changes</button>
             <a href="javascript:history.back()" class="btn btn-secondary mt-3">Cancel</a>

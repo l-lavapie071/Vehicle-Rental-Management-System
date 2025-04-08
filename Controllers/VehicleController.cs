@@ -106,15 +106,16 @@ namespace Vehicle_Rental_Management_System.Controllers
             return View(vm);
         }
         [HttpGet("Edit/{id}")]
-        public IActionResult EditVehicle(int id)
+        public async Task<IActionResult> EditVehicle(int id)
         {
-            var vehicle = _context.Vehicles.Find(id);
+            var vehicle = await _context.Vehicles.FindAsync(id);
             if (vehicle == null)
             {
                 return NotFound();
             }
             return View(vehicle);
         }
+
 
         [HttpPost("Edit/{id}")]
         public async Task<IActionResult> Edit(int id, Vehicle vehicle, IFormFile? Image)

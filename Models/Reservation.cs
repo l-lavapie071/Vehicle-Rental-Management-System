@@ -13,13 +13,13 @@ namespace Vehicle_Rental_Management_System.Models
         public int VehicleId { get; set; }
 
         [ForeignKey("VehicleId")]
-        public Vehicle Vehicle { get; set; }
+        public Vehicle? Vehicle { get; set; }
 
         [Required]
         public int CustomerId { get; set; }
 
         [ForeignKey("CustomerId")]
-        public Customer Customer { get; set; }
+        public Customer? Customer { get; set; }
 
 
         [Required]

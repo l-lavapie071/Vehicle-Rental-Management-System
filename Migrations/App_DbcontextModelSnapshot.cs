@@ -240,11 +240,17 @@ namespace Vehicle_Rental_Management_System.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateOnly>("BillingDate")
-                        .HasColumnType("date");
+                    b.Property<DateTime>("BillingDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("CleaningFee")
+                        .HasColumnType("decimal(18, 2)");
 
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
+
+                    b.Property<decimal>("InsuranceFee")
+                        .HasColumnType("decimal(18, 2)");
 
                     b.Property<int>("ReservationId")
                         .HasColumnType("int");
@@ -252,8 +258,8 @@ namespace Vehicle_Rental_Management_System.Migrations
                     b.Property<decimal>("Tax")
                         .HasColumnType("decimal(18, 2)");
 
-                    b.Property<decimal>("TotalAmount")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<double>("TotalAmount")
+                        .HasColumnType("float");
 
                     b.HasKey("Id");
 
@@ -370,6 +376,9 @@ namespace Vehicle_Rental_Management_System.Migrations
 
                     b.Property<double>("RentalPricePerDay")
                         .HasColumnType("float");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Year")
                         .HasColumnType("int");

@@ -1,15 +1,69 @@
 ﻿@{
+    ViewData["Title"] = "Dashboard";
     Layout = "_Layout";
 }
-@using Microsoft.AspNetCore.Identity;
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Vehicle Rental Management System</title>
-</head>
-<body>
-    <h1>Dashboard</h1>
 
-    <p>Welcome @User.Identity!.Name!</p>
-</body>
-</html>
+<div class="container mt-4">
+    <h2 class="mb-4"><i class="bi bi-speedometer2 me-2"></i>Dashboard</h2>
+
+    <div class="row mb-3">
+        <div class="col-md-3"><strong><i class="bi bi-currency-dollar me-1"></i>Total Revenue:</strong> @ViewBag.TotalRevenue.ToString("C2")</div>
+        <div class="col-md-3"><strong><i class="bi bi-receipt me-1"></i>Tax Collected (5%):</strong> @ViewBag.TaxCollected.ToString("C2")</div>
+        <div class="col-md-3"><strong><i class="bi bi-calendar-check me-1"></i>Total Reservations:</strong> @ViewBag.TotalReservations</div>
+        <div class="col-md-3"><strong><i class="bi bi-clock-history me-1"></i>Avg Rental Duration:</strong> @ViewBag.AverageRentalDuration.ToString("N1") days</div>
+    </div>
+
+    <hr />
+
+    <h4 class="mt-4"><i class="bi bi-car-front-fill me-2"></i>Top Rented Vehicles</h4>
+    <div class="table-responsive">
+        <table class="table table-bordered table-sm table-striped table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>Make & Model</th>
+                    <th>Type</th>
+                    <th>License Plate</th>
+                    <th><i class="bi bi-graph-up me-1"></i>Times Rented</th>
+                    <th><i class="bi bi-cash-coin me-1"></i>Total Revenue</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var v in ViewBag.MostRentedVehicles)
+                {
+                    <tr>
+                        <td>@v.Vehicle.Make @v.Vehicle.Model</td>
+                        <td>@v.Vehicle.Type</td>
+                        <td>@v.Vehicle.LicensePlate</td>
+                        <td>@v.TimesRented</td>
+                        <td>@v.Revenue.ToString("C2")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <h4 class="mt-4"><i class="bi bi-people-fill me-2"></i>Top Customers</h4>
+    <div class="table-responsive">
+        <table class="table table-bordered table-sm table-striped table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th><i class="bi bi-person-badge me-1"></i>Customer Name</th>
+                    <th><i class="bi bi-envelope me-1"></i>Email</th>
+                    <th><i class="bi bi-bookmark-check me-1"></i>Reservations</th>
+                    <th><i class="bi bi-wallet2 me-1"></i>Total Spent</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var c in ViewBag.CustomerActivity)
+                {
+                    <tr>
+                        <td>@c.Customer.FirstName @c.Customer.LastName</td>
+                        <td>@c.Customer.Email</td>
+                        <td>@c.Reservations</td>
+                        <td>@c.TotalSpent.ToString("C2")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

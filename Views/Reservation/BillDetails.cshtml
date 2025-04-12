@@ -1,0 +1,111 @@
+﻿@model Vehicle_Rental_Management_System.Models.Billing
+@{
+    Layout = "_Layout";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Vehicle List</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+</head>
+<body>
+    <div class="container mt-4">
+        <h2 class="mb-4">Billing Details </h2>
+
+        <div class="card">
+            <div class="card-body">
+
+                <h5 class="mb-3"><i class="fas fa-file-invoice"></i> Invoice ID: #@Model.Id</h5>
+                <p><strong>Billing Date:</strong> @Model.BillingDate.ToString("yyyy-MM-dd")</p>
+
+                <hr />
+
+                <h5 class="mb-2"><i class="fas fa-user"></i> Customer Information</h5>
+                <p><strong>Name:</strong> @Model.Customer?.FirstName @Model.Customer?.LastName</p>
+                <p><strong>Email:</strong> @Model.Customer?.Email</p>
+                <p><strong>Phone:</strong> @Model.Customer?.PhoneNumber</p>
+
+                <hr />
+
+                <h5 class="mb-2"><i class="fas fa-car"></i> Vehicle Information</h5>
+                <p><strong>Make & Model:</strong> @Model.Reservation?.Vehicle?.Make @Model.Reservation?.Vehicle?.Model</p>
+                <p><strong>License Plate:</strong> @Model.Reservation?.Vehicle?.LicensePlate</p>
+                <p><strong>Rental Period:</strong> @Model.Reservation?.StartDate.ToString("yyyy-MM-dd") to @Model.Reservation?.EndDate.ToString("yyyy-MM-dd")</p>
+
+                @{
+                    var totalDays = (Model.Reservation.EndDate - Model.Reservation.StartDate).Days;
+                    var dailyRate = Model.Reservation.Vehicle?.RentalPricePerDay ?? 0;
+                    var subtotal = totalDays * dailyRate;
+                    var taxAmount = subtotal * Model.Tax;
+                }
+
+                <hr />
+
+                <h5 class="mb-2"><i class="fas fa-calculator"></i> Billing Summary</h5>
+                <p><strong>Total Days:</strong> @totalDays</p>
+                <p><strong>Rental Price Per Day:</strong> @dailyRate.ToString("C2")</p>
+                <p><strong>Subtotal:</strong> @subtotal.ToString("C2")</p>
+                <p><strong>Tax (@(Model.Tax * 100)%):</strong> @taxAmount.ToString("C2")</p>
+                <p><strong>Cleaning Fee: </strong>@Model.CleaningFee.ToString("C2") </p>
+                <p><strong>Insurance Fee: </strong>@Model.InsuranceFee.ToString("C2") </p>
+                <p><strong>Total Amount:</strong> <span class="fw-bold text-success">@Model.TotalAmount.ToString("C2")</span></p>
+
+            </div>
+        </div>
+
+        <div class="mt-3">
+            <button id="downloadBill" class="btn btn-success">
+                <i class="fas fa-download"></i> Download Bill (PDF)
+            </button>
+            <a href="@Url.Action("ReservationList", "Reservation")" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Reservations
+            </a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('downloadBill').addEventListener('click', function () {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            doc.setFontSize(16);
+            doc.text('Invoice ID: #' + '@Model.Id', 10, 10);
+            doc.text('Billing Date: ' + '@Model.BillingDate.ToString("yyyy-MM-dd")', 10, 20);
+
+            doc.line(10, 25, 200, 25); // horizontal line
+
+            // Customer Info Section
+            doc.setFontSize(12);
+            doc.text('Customer Information', 10, 35);
+            doc.text('Name: ' + '@Model.Customer?.FirstName @Model.Customer?.LastName', 10, 45);
+            doc.text('Email: ' + '@Model.Customer?.Email', 10, 55);
+            doc.text('Phone: ' + '@Model.Customer?.PhoneNumber', 10, 65);
+
+            doc.line(10, 70, 200, 70);
+
+            // Vehicle Info Section
+            doc.text('Vehicle Information', 10, 80);
+            doc.text('Make & Model: ' + '@Model.Reservation?.Vehicle?.Make @Model.Reservation?.Vehicle?.Model', 10, 90);
+            doc.text('License Plate: ' + '@Model.Reservation?.Vehicle?.LicensePlate', 10, 100);
+            doc.text('Rental Period: ' + '@Model.Reservation?.StartDate.ToString("yyyy-MM-dd") to @Model.Reservation?.EndDate.ToString("yyyy-MM-dd")', 10, 110);
+
+            doc.line(10, 115, 200, 115);
+
+            // Billing Summary Section
+            doc.text('Billing Summary', 10, 125);
+            doc.text('Total Days: ' + '@totalDays', 10, 135);
+            doc.text('Rental Price Per Day: ' + '@dailyRate.ToString("C2")', 10, 145);
+            doc.text('Subtotal: ' + '@subtotal.ToString("C2")', 10, 155);
+            doc.text('Tax (' + '@(Model.Tax * 100)%): ' + '@taxAmount.ToString("C2")', 10, 165);
+            doc.text('Cleaning Fee: ' + '@Model.CleaningFee.ToString("C2")', 10, 175);
+            doc.text('Insurance Fee: ' + '@Model.InsuranceFee.ToString("C2")', 10, 185);
+            doc.text('Total Amount: ' + '@Model.TotalAmount.ToString("C2")', 10, 195);
+
+            doc.save('billing_invoice_' + '@Model.Id' + '.pdf');
+        });
+    </script>
+</body>
+</html>

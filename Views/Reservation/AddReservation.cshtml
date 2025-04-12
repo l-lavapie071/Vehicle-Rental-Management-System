@@ -11,6 +11,8 @@
     <title>Add Reservation</title>
     <link href="~/css/login.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
 </head>
 <body>
     <div class="container mt-5">
@@ -19,7 +21,9 @@
 
             <form asp-action="AddReservation" method="post">
                 <div class="form-group mb-3">
-                    <label asp-for="Reservation.CustomerId" class="control-label">Select Customer</label>
+                    <label asp-for="Reservation.CustomerId" class="control-label">
+                        <i class="fas fa-user"></i> Select Customer
+                    </label>
                     <select asp-for="Reservation.CustomerId" class="form-control" asp-items="Model.Customers">
                         <option value="">-- Select Customer --</option>
                     </select>
@@ -27,7 +31,9 @@
                 </div>
 
                 <div class="form-group mb-3">
-                    <label asp-for="Reservation.VehicleId" class="control-label">Select Vehicle</label>
+                    <label asp-for="Reservation.VehicleId" class="control-label">
+                        <i class="fas fa-car"></i> Select Vehicle
+                    </label>
                     <select asp-for="Reservation.VehicleId" class="form-control" asp-items="Model.Vehicles">
                         <option value="">-- Select Vehicle --</option>
                     </select>
@@ -35,20 +41,26 @@
                 </div>
 
                 <div class="form-group mb-3">
-                    <label asp-for="Reservation.StartDate">Start Date</label>
+                    <label asp-for="Reservation.StartDate">
+                        <i class="fas fa-calendar-alt"></i> Start Date
+                    </label>
                     <input asp-for="Reservation.StartDate" class="form-control" type="date" />
                     <span asp-validation-for="Reservation.StartDate" class="text-danger"></span>
                 </div>
 
                 <div class="form-group mb-3">
-                    <label asp-for="Reservation.EndDate">End Date</label>
+                    <label asp-for="Reservation.EndDate">
+                        <i class="fas fa-calendar-alt"></i> End Date
+                    </label>
                     <input asp-for="Reservation.EndDate" class="form-control" type="date" />
                     <span asp-validation-for="Reservation.EndDate" class="text-danger"></span>
                 </div>
 
                 <div class="form-group mt-3 text-center">
                     <input type="submit" value="Reserve" class="btn btn-primary" />
-                    <a asp-action="ReservationList" class="btn btn-secondary ms-2">Back</a>
+                    <a asp-action="ReservationList" class="btn btn-secondary ms-2">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </a>
                 </div>
             </form>
         </div>
@@ -56,8 +68,15 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const today = new Date().toISOString().split('T')[0]; // Get current date in YYYY-MM-DD format
-            document.querySelector('input[name="Reservation.StartDate"]').value = today;
-            document.querySelector('input[name="Reservation.EndDate"]').value = today;
+            const startDateInput = document.querySelector('input[name="Reservation.StartDate"]');
+            const endDateInput = document.querySelector('input[name="Reservation.EndDate"]');
+
+            startDateInput.value = today;
+            endDateInput.value = today;
+
+            // Disable past dates for both start and end date fields
+            startDateInput.setAttribute('min', today);
+            endDateInput.setAttribute('min', today);
         });
     </script>
 </body>

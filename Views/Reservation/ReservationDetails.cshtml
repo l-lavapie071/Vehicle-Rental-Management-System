@@ -10,10 +10,12 @@
 <head>
     <title>Reservation Details</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <!-- Add Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
 </head>
 <body>
     <div class="container mt-4">
-        <h2 class="mb-3">Reservation Details</h2>
+        <h2 class="mb-3"><i class="fas fa-calendar-check"></i> Reservation Details</h2>
 
         <div class="card">
             <div class="row g-0">
@@ -24,14 +26,25 @@
                             @Model.Vehicle.Make @Model.Vehicle.Model (@Model.Vehicle.LicensePlate)
 
                             <!-- Delete button with confirmation -->
-                            <form asp-controller="reservation" asp-action="DeleteReservation" asp-route-id="@Model.Id"
-                                  method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this reservation?');">
-                                <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-                            </form>
+                            @if (!Model.IsReturned)
+                            {
+                                <form asp-controller="reservation" asp-action="DeleteReservation" asp-route-id="@Model.Id"
+                                      method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this reservation?');">
+                                    <button type="submit" class="btn btn-sm btn-danger">
+                                        <i class="fas fa-trash-alt"></i> Delete
+                                    </button>
+                                </form>
+                            }
+                            else
+                            {
+                                <button class="btn btn-sm btn-danger" disabled>
+                                    <i class="fas fa-trash-alt"></i> Delete
+                                </button>
+                            }
                         </h4>
 
                         <hr />
-                        <h5 class="mb-2">Reservation Info</h5>
+                        <h5 class="mb-2"><i class="fas fa-info-circle"></i> Reservation Info</h5>
                         <p><strong>Start Date:</strong> @Model.StartDate.ToString("yyyy-MM-dd")</p>
                         <p><strong>End Date:</strong> @Model.EndDate.ToString("yyyy-MM-dd")</p>
                         <p><strong>Returned:</strong> @(Model.IsReturned ? "Yes" : "No")</p>
@@ -47,7 +60,7 @@
                         <p><strong>Total Cost:</strong> @totalCost.ToString("C2")</p>
 
                         <hr />
-                        <h5 class="mb-2">Customer Info</h5>
+                        <h5 class="mb-2"><i class="fas fa-user"></i> Customer Info</h5>
                         <p><strong>Name:</strong> @Model.Customer.FirstName @Model.Customer.LastName</p>
                         <p><strong>Email:</strong> @Model.Customer.Email</p>
                         <p><strong>Phone:</strong> @Model.Customer.PhoneNumber</p>
@@ -56,10 +69,11 @@
                         <div class="row">
                             <!-- Left Column: Vehicle Info -->
                             <div class="col-md-3">
-                                <h5 class="mb-2">Vehicle Info</h5>
+                                <h5 class="mb-2"><i class="fas fa-car"></i> Vehicle Info</h5>
                                 <p><strong>Make:</strong> @Model.Vehicle.Make</p>
                                 <p><strong>Model:</strong> @Model.Vehicle.Model</p>
                                 <p><strong>Year:</strong> @Model.Vehicle.Year</p>
+                                <p><strong>Vehicle Type:</strong> @Model.Vehicle.Type</p>
                                 <p><strong>License Plate:</strong> @Model.Vehicle.LicensePlate</p>
                                 <p><strong>Mileage:</strong> @Model.Vehicle.Mileage.ToString("N0") km</p>
                                 <p><strong>Description:</strong> @Model.Vehicle.Description</p>
@@ -75,8 +89,35 @@
             </div>
         </div>
 
-        <a asp-controller="reservation" asp-action="EditReservation" asp-route-id="@Model.Id" class="btn btn-primary mt-3">Edit</a>
-        <a href="javascript:history.back()" class="btn btn-secondary mt-3">Back</a>
+        @if (ViewBag.Bill != null)
+        {
+            <a asp-controller="reservation" asp-action="BillDetails" asp-route-id="@ViewBag.Bill.Id" class="btn btn-success mt-3">
+                <i class="fas fa-file-invoice"></i> View Bill
+            </a>
+        }
+        else
+        {
+            <a asp-controller="reservation" asp-action="GenerateBill" asp-route-id="@Model.Id" class="btn btn-success mt-3">
+                <i class="fas fa-file-invoice-dollar"></i> Generate Bill
+            </a>
+        }
+
+        @if (!Model.IsReturned && ViewBag.Bill == null)
+        {
+            <a asp-controller="reservation" asp-action="EditReservation" asp-route-id="@Model.Id" class="btn btn-primary mt-3">
+                <i class="fas fa-edit"></i> Edit
+            </a>
+        }
+        else
+        {
+            <button class="btn btn-primary mt-3" disabled>
+                <i class="fas fa-edit"></i> Edit
+            </button>
+        }
+
+        <a href="javascript:history.back()" class="btn btn-secondary mt-3">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

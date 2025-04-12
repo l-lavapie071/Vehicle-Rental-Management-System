@@ -22,16 +22,43 @@ namespace Vehicle_Rental_Management_System.Controllers
 
         // Display all Reservation
         [HttpGet]
-        public async Task<IActionResult> ReservationList()
+        public async Task<IActionResult> ReservationList(string customer, string make, string model, string returned)
         {
-            var reservations = await _context.Reservations
-            .Include(r => r.Customer)
-            .Include(r => r.Vehicle)
-            .ToListAsync();
-            return View(reservations);
+            var reservations = _context.Reservations
+                .Include(r => r.Customer)
+                .Include(r => r.Vehicle)
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(customer))
+            {
+                reservations = reservations.Where(r =>
+                    (r.Customer.FirstName + " " + r.Customer.LastName).ToLower().Contains(customer.ToLower()));
+            }
+
+            if (!string.IsNullOrEmpty(make))
+            {
+                reservations = reservations.Where(r =>
+                    r.Vehicle.Make.ToLower().Contains(make.ToLower()));
+            }
+
+            if (!string.IsNullOrEmpty(model))
+            {
+                reservations = reservations.Where(r =>
+                    r.Vehicle.Model.ToLower().Contains(model.ToLower()));
+            }
+
+            if (!string.IsNullOrEmpty(returned))
+            {
+                bool isReturned = returned == "true";
+                reservations = reservations.Where(r => r.IsReturned == isReturned);
+            }
+
+            var filteredList = await reservations.ToListAsync();
+            return View(filteredList);
         }
 
-        // Get Customer Details
+
+        // Get Reservation Details
         [HttpGet("Details/{id}")]
         public async Task<IActionResult> ReservationDetails(int id)
         {
@@ -40,8 +67,17 @@ namespace Vehicle_Rental_Management_System.Controllers
             .Include(r => r.Customer)
             .Include(r => r.Vehicle)
             .FirstOrDefaultAsync();
+            if (reservation == null)
+                return NotFound();
 
-            return reservation != null ? View(reservation) : NotFound();
+            
+
+            var bill = await _context.Billings
+            .FirstOrDefaultAsync(b => b.ReservationId == reservation.Id);
+
+            ViewBag.Bill = bill;
+
+            return View(reservation);
         }
 
         // Show create form
@@ -172,6 +208,22 @@ namespace Vehicle_Rental_Management_System.Controllers
                 return NotFound();
             }
 
+            // Check if 'IsReturned' is true and 'NewMileage' is null
+            if (viewModel.Reservation.IsReturned && !viewModel.NewMileage.HasValue)
+            {
+                ModelState.AddModelError("NewMileage", "New Mileage is required when the vehicle is returned.");
+            }
+
+            // Validate that the new mileage is greater than the current mileage
+            if (viewModel.NewMileage.HasValue)
+            {
+                var vehicle = await _context.Vehicles.FirstOrDefaultAsync(v => v.Id == viewModel.Reservation.VehicleId);
+                if (vehicle != null && viewModel.NewMileage < vehicle.Mileage)
+                {
+                    ModelState.AddModelError("NewMileage", "New Mileage must be greater than the prevoius mileage.");
+                }
+            }
+
             if (ModelState.IsValid)
             {
                 var reservation = await _context.Reservations
@@ -186,40 +238,54 @@ namespace Vehicle_Rental_Management_System.Controllers
                 var oldVehicle = reservation.Vehicle;
                 var newVehicle = await _context.Vehicles.FirstOrDefaultAsync(v => v.Id == viewModel.Reservation.VehicleId);
 
-                // Check if vehicle is changed
+                // Check if vehicle has been changed
                 if (oldVehicle.Id != newVehicle.Id)
                 {
-                    oldVehicle.IsAvailable = true;
+                    // If the old vehicle is being returned, set it as available
+                    if (reservation.IsReturned)
+                    {
+                        oldVehicle.IsAvailable = true;
+                    }
+                    else
+                    {
+                        oldVehicle.IsAvailable = false;
+                    }
 
-
-                    // Set the new vehicle as not available
+                    // Set the new vehicle as unavailable
                     newVehicle.IsAvailable = false;
 
-
+                    // If the reservation is marked as returned, set the new vehicle as available
                     if (viewModel.Reservation.IsReturned)
                     {
                         newVehicle.IsAvailable = true;
                     }
-                    else {
-                        newVehicle.IsAvailable = false;
-                    }
+
                     // Update the vehicles in the database
                     _context.Update(oldVehicle);
                     _context.Update(newVehicle);
                 }
-                else {
+                else
+                {
+                    // If the vehicle has not changed, update the availability of the old vehicle
                     if (viewModel.Reservation.IsReturned)
                     {
                         oldVehicle.IsAvailable = true;
-                        
                     }
-                    else {
+                    else
+                    {
                         oldVehicle.IsAvailable = false;
                     }
+
+                    // Only update the old vehicle
                     _context.Update(oldVehicle);
                 }
 
-                
+                // Update vehicle mileage
+                if (viewModel.NewMileage.HasValue)
+                {
+                    oldVehicle.Mileage = (int)viewModel.NewMileage.Value; // Update the mileage of the old vehicle
+                    _context.Update(oldVehicle);
+                }
 
                 // Update the reservation details
                 reservation.CustomerId = viewModel.Reservation.CustomerId;
@@ -255,7 +321,79 @@ namespace Vehicle_Rental_Management_System.Controllers
             return View(viewModel);
         }
 
+        [HttpPost("Delete/{id}")]
+        public async Task<IActionResult> DeleteReservation(int id)
+        {
+            var reservation = await _context.Reservations.FindAsync(id);
+            if (reservation == null)
+            {
+                return NotFound();
+            }
 
+            var vehicle = await _context.Vehicles.FindAsync(reservation.VehicleId);
+            if (vehicle != null)
+            {
+                vehicle.IsAvailable = true;
+                _context.Vehicles.Update(vehicle);
+            }
+
+            _context.Reservations.Remove(reservation);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(ReservationList));
+        }
+        [HttpGet("GenerateBill/{id}")]
+        public async Task<IActionResult> GenerateBill(int id)
+        {
+            var reservation = await _context.Reservations
+                .Include(r => r.Customer)
+                .Include(r => r.Vehicle)
+                .FirstOrDefaultAsync(r => r.Id == id);
+
+            if (reservation == null)
+                return NotFound();
+
+            var totalDays = (reservation.EndDate - reservation.StartDate).Days;
+            var dailyRate = reservation.Vehicle?.RentalPricePerDay ?? 0;
+            var subtotal = totalDays * dailyRate;
+            var taxRate = 0.05;
+            var taxAmount = subtotal * taxRate;
+            var insuranceFee = 30.0;
+            var cleaningFee = 25.0;
+            var totalAmount = subtotal + taxAmount + insuranceFee + cleaningFee;
+
+            var billing = new Billing
+            {
+
+                CustomerId = reservation.CustomerId,
+                ReservationId = reservation.Id,
+                Tax = taxRate,
+                InsuranceFee = insuranceFee,
+                CleaningFee = cleaningFee,
+                TotalAmount = totalAmount,
+                BillingDate = DateTime.Now
+            };
+
+            _context.Billings.Add(billing);
+            await _context.SaveChangesAsync();
+
+            return View("BillDetails", billing);
+        }
+
+        [HttpGet("BillDetails/{id}")]
+        public async Task<IActionResult> BillDetails(int id)
+        {
+            var bill = await _context.Billings
+                .Include(b => b.Customer)
+                .Include(b => b.Reservation)
+                .ThenInclude(r => r.Vehicle)
+                .FirstOrDefaultAsync(b => b.Id == id);
+
+            if (bill == null)
+                return NotFound();
+
+            return View(bill);
+        }
 
 
     }

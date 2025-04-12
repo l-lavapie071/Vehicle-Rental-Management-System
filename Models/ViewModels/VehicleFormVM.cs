@@ -28,6 +28,8 @@ namespace Vehicle_Rental_Management_System.Models.ViewModels
 
         public string? Description { get; set; }
 
+        public string? Type { get; set; }
+
         public bool IsAvailable { get; set; }
 
         public IFormFile? ImageFile { get; set; }  // Uploaded image

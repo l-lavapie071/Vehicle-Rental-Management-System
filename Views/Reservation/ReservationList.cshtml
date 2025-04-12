@@ -11,23 +11,76 @@
 <head>
     <title>Reservation List</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <!-- Add Bootstrap Icons CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" />
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var rows = document.querySelectorAll("tbody tr");
+            rows.forEach(function (row) {
+                var isReturned = row.querySelector("#status").innerText.trim() === "Yes";
+                if (isReturned) {
+                    var editButton = row.querySelector(".edit-button");
+                    var deleteButton = row.querySelector(".delete-button");
+                    if (editButton) {
+                        editButton.removeAttribute("href");
+                        editButton.style.pointerEvents = "none";
+                        editButton.style.color = "gray";
+                    }
+                    if (deleteButton) deleteButton.disabled = true;
+                }
+            });
+        });
+    </script>
 </head>
 
 <body>
     <div class="container mt-4">
-        <h2 class="mb-3">Reservation List</h2>
-        @* <!-- Search Form -->
-        <form asp-controller="customer" asp-action="Search" method="get" class="mb-3">
-            <div class="input-group">
-                <input type="text" name="query" class="form-control" placeholder="Search by Name..." />
-                <button type="submit" class="btn btn-outline-primary">Search</button>
-            </div>
-        </form> *@
+        <h2 class="mb-3 text-center">
+            <i class="bi bi-list"></i> Reservation List
+        </h2>
 
+        <!-- Filter Section -->
+        <form method="get" class="mb-4">
+            <div class="row g-2">
+                <div class="col-md-3">
+                    <label for="customer">Customer Name:</label>
+                    <input type="text" name="customer" id="customer" class="form-control"
+                           placeholder="Enter customer name" value="@Context.Request.Query["customer"]" />
+                </div>
+                <div class="col-md-3">
+                    <label for="make">Vehicle Make:</label>
+                    <input type="text" name="make" id="make" class="form-control"
+                           placeholder="Enter vehicle make" value="@Context.Request.Query["make"]" />
+                </div>
+                <div class="col-md-3">
+                    <label for="model">Vehicle Model:</label>
+                    <input type="text" name="model" id="model" class="form-control"
+                           placeholder="Enter vehicle model" value="@Context.Request.Query["model"]" />
+                </div>
+                <div class="col-md-3">
+                    <label for="returned">Returned:</label>
+                    <select name="returned" id="returned" class="form-select">
+                        <option value="">All</option>
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                </div>
+            </div>
+            <div class="mt-3 text-center">
+                <button type="submit" class="btn btn-primary me-2">
+                    <i class="bi bi-funnel"></i> Apply Filters
+                </button>
+                <a href="@Url.Action("ReservationList", "Reservation")" class="btn btn-secondary">
+                    <i class="bi bi-eraser"></i> Clear
+                </a>
+            </div>
+        </form>
+
+        <!-- Reservation Table -->
         <table class="table table-hover table-striped">
             <thead>
                 <tr>
-                    <th></th>
+                    <th>View</th>
                     <th>Id</th>
                     <th>Customer</th>
                     <th>Vehicle</th>
@@ -43,29 +96,41 @@
                     <tr>
                         <td>
                             <a asp-controller="reservation" asp-action="ReservationDetails"
-                                asp-route-id="@reservation.Id">View</a>
+                               asp-route-id="@reservation.Id">
+                                <i class="bi bi-eye"></i> View
+                            </a>
                         </td>
                         <td>@reservation.Id</td>
                         <td>@reservation.Customer.FirstName @reservation.Customer.LastName</td>
                         <td>@reservation.Vehicle.Make-@reservation.Vehicle.Model (@reservation.Vehicle.LicensePlate)</td>
                         <td>@reservation.StartDate.ToString("yyyy-MM-dd")</td>
                         <td>@reservation.EndDate.ToString("yyyy-MM-dd")</td>
-                        <td>
+                        <td id="status">
                             @(reservation.IsReturned ? "Yes" : "No")
                         </td>
                         <td>
-                            <a asp-controller="reservation" asp-action="EditReservation" asp-route-id="@reservation.Id">Edit</a> |
+                            <a asp-controller="reservation" asp-action="EditReservation" asp-route-id="@reservation.Id" class="edit-button text-warning">
+                                <i class="bi bi-pencil-square"></i> Edit
+                            </a> |
                             <form asp-controller="reservation" asp-action="DeleteReservation" asp-route-id="@reservation.Id"
-                                method="post" class="d-inline"
-                                onsubmit="return confirm('Are you sure you want to delete this reservation?');">
-                                <button type="submit" class="btn btn-link p-0 m-0 align-baseline">Delete</button>
+                                  method="post" class="d-inline"
+                                  onsubmit="return confirm('Are you sure you want to delete this reservation?');">
+                                <button type="submit" class="btn btn-link p-0 m-0 align-baseline delete-button text-danger">
+                                    <i class="bi bi-trash-fill"></i> Delete
+                                </button>
                             </form>
                         </td>
                     </tr>
                 }
             </tbody>
         </table>
-        <a class="btn btn-primary" asp-controller="reservation" asp-action="AddReservation">Add</a>
+
+        <!-- Add Reservation Button -->
+        <div class="text-center">
+            <a class="btn btn-primary" asp-controller="reservation" asp-action="AddReservation">
+                <i class="bi bi-plus-circle"></i> Add Reservation
+            </a>
+        </div>
     </div>
 </body>
 

@@ -35,6 +35,8 @@ namespace Vehicle_Rental_Management_System.Models
         [StringLength(500)]
         public string? Description { get; set; }  // A description of the vehicle (optional)
 
+        public string? Type { get; set; }  // Type of Vehicle e.i sedan,truck, SUV
+
         public bool IsAvailable { get; set; }  // Availability status for rental
 
         public string? ImageUrl { get; set; }  // Optional URL for vehicle image

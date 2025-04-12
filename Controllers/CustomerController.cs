@@ -22,11 +22,29 @@ namespace Vehicle_Rental_Management_System.Controllers
 
         // Display all Customer
         [HttpGet]
-        public async Task<IActionResult> CustomerList()
+        public async Task<IActionResult> CustomerList(string name, string email, string phone)
         {
-            var customers = await _context.Customers.ToListAsync();
-            return View(customers);
+            var query = _context.Customers.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(name))
+            {
+                query = query.Where(c => (c.FirstName + " " + c.LastName).Contains(name));
+            }
+
+            if (!string.IsNullOrWhiteSpace(email))
+            {
+                query = query.Where(c => c.Email.Contains(email));
+            }
+
+            if (!string.IsNullOrWhiteSpace(phone))
+            {
+                query = query.Where(c => c.PhoneNumber.Contains(phone));
+            }
+
+            var filteredCustomers = await query.ToListAsync();
+            return View(filteredCustomers);
         }
+
         // Get Customer Details
         [HttpGet("Details/{id}")]
         public async Task<IActionResult> CustomerDetails(int id)

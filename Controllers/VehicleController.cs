@@ -21,12 +21,38 @@ namespace Vehicle_Rental_Management_System.Controllers
             _webHostEnvironment = webHostEnvironment;
         }
         // Display all Vehicle
+        // Display all Vehicle with optional filtering
         [HttpGet]
-        public async Task<IActionResult> VehicleList()
+        public async Task<IActionResult> VehicleList(string type, string make, string model, bool? availability)
         {
-            var vehiles = await _context.Vehicles.ToListAsync();
-            return View(vehiles);
+            // Start with all vehicles
+            var vehicles = await _context.Vehicles.ToListAsync();
+
+            // Apply filters if provided
+            if (!string.IsNullOrEmpty(type))
+            {
+                vehicles = vehicles.Where(v => v.Type.Contains(type, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+
+            if (!string.IsNullOrEmpty(make))
+            {
+                vehicles = vehicles.Where(v => v.Make.Contains(make, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+
+            if (!string.IsNullOrEmpty(model))
+            {
+                vehicles = vehicles.Where(v => v.Model.Contains(model, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+
+            if (availability.HasValue)
+            {
+                vehicles = vehicles.Where(v => v.IsAvailable == availability.Value).ToList();
+            }
+
+            // Return the filtered list to the view
+            return View(vehicles);
         }
+
 
         // Display Vehicle details
         [HttpGet("Details/{id}")]
@@ -83,6 +109,7 @@ namespace Vehicle_Rental_Management_System.Controllers
                 {
                     Make = vm.Make,
                     Model = vm.Model,
+                    Type = vm.Type,
                     Year = vm.Year,
                     LicensePlate = vm.LicensePlate.ToUpper(),
                     Mileage = vm.Mileage,
@@ -168,6 +195,7 @@ namespace Vehicle_Rental_Management_System.Controllers
                     // Update other fields from the form to the existing vehicle object
                     existingVehicle.Make = vehicle.Make;
                     existingVehicle.Model = vehicle.Model;
+                    existingVehicle.Type = vehicle.Type;
                     existingVehicle.Year = vehicle.Year;
                     existingVehicle.LicensePlate = vehicle.LicensePlate;
                     existingVehicle.Mileage = vehicle.Mileage;

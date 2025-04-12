@@ -134,6 +134,19 @@ namespace Vehicle_Rental_Management_System.Controllers
             return View(customer);
         }
         [HttpPost("Delete/{id}")]
+        //public async Task<IActionResult> DeleteCustomer(int id)
+        //{
+        //    var cust = await _context.Customers.FindAsync(id);
+        //    if (cust == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    _context.Customers.Remove(cust);
+        //    await _context.SaveChangesAsync();
+
+        //    return RedirectToAction(nameof(CustomerList));
+        //}
         public async Task<IActionResult> DeleteCustomer(int id)
         {
             var cust = await _context.Customers.FindAsync(id);
@@ -142,10 +155,21 @@ namespace Vehicle_Rental_Management_System.Controllers
                 return NotFound();
             }
 
+            // Check for any active reservations (not yet returned)
+            bool hasActiveReservations = await _context.Reservations
+                .AnyAsync(r => r.CustomerId == id && !r.IsReturned); 
+
+            if (hasActiveReservations)
+            {
+                TempData["Error"] = "Customer cannot be deleted as they have active reservations.";
+                return RedirectToAction(nameof(CustomerList));
+            }
+
             _context.Customers.Remove(cust);
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(CustomerList));
         }
+
     }
 }

@@ -66,6 +66,22 @@ namespace Vehicle_Rental_Management_System.Controllers
         {
             if (ModelState.IsValid)
             {
+                // Check for duplicate email
+                var existingEmailUser = await userManager.FindByEmailAsync(model.Email);
+                if (existingEmailUser != null)
+                {
+                    ModelState.AddModelError("Email", "Email is already registered.");
+                    return View(model);
+                }
+
+                // Check for duplicate username
+                var existingUsernameUser = await userManager.FindByNameAsync(model.Username);
+                if (existingUsernameUser != null)
+                {
+                    ModelState.AddModelError("Username", "Username is already taken.");
+                    return View(model);
+                }
+
                 AppUser user = new()
                 {
                     FirstName = model.FirstName,
@@ -73,25 +89,25 @@ namespace Vehicle_Rental_Management_System.Controllers
                     Email = model.Email,
                     PhoneNumber = model.PhoneNumber,
                     UserName = model.Username,
-                    PasswordHash = model.Password,
                     Address = model.Address,
-
                 };
+
                 var result = await userManager.CreateAsync(user, model.Password!);
                 if (result.Succeeded)
                 {
                     await signInManager.SignInAsync(user, false);
                     return RedirectToAction("Index", "Home");
                 }
+
                 foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError("", error.Description);
                 }
-
             }
 
             return View(model);
         }
+
         [HttpGet]
         [Route("logout")]
         public async Task<IActionResult> Logout()

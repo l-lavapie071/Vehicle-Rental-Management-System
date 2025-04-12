@@ -4,10 +4,12 @@ using System.Reflection.Metadata;
 using Vehicle_Rental_Management_System.Data;
 using Vehicle_Rental_Management_System.Models;
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
 
 
 namespace Vehicle_Rental_Management_System.Controllers
 {
+    [Authorize]
     public class ReportsController : Controller
     {
         private readonly App_Dbcontext _context;

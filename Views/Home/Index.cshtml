@@ -6,15 +6,29 @@
 <div class="container mt-4">
     <h2 class="mb-4"><i class="bi bi-speedometer2 me-2"></i>Dashboard</h2>
 
+    <!-- Summary Stats -->
     <div class="row mb-3">
-        <div class="col-md-3"><strong><i class="bi bi-currency-dollar me-1"></i>Total Revenue:</strong> @ViewBag.TotalRevenue.ToString("C2")</div>
-        <div class="col-md-3"><strong><i class="bi bi-receipt me-1"></i>Tax Collected (5%):</strong> @ViewBag.TaxCollected.ToString("C2")</div>
-        <div class="col-md-3"><strong><i class="bi bi-calendar-check me-1"></i>Total Reservations:</strong> @ViewBag.TotalReservations</div>
-        <div class="col-md-3"><strong><i class="bi bi-clock-history me-1"></i>Avg Rental Duration:</strong> @ViewBag.AverageRentalDuration.ToString("N1") days</div>
+        <div class="col-md-3">
+            <strong><i class="bi bi-currency-dollar me-1"></i>Total Revenue:</strong>
+            @((ViewBag.TotalRevenue as double?)?.ToString("C2") ?? "N/A")
+        </div>
+        <div class="col-md-3">
+            <strong><i class="bi bi-receipt me-1"></i>Tax Collected (5%):</strong>
+            @((ViewBag.TaxCollected as double?)?.ToString("C2") ?? "N/A")
+        </div>
+        <div class="col-md-3">
+            <strong><i class="bi bi-calendar-check me-1"></i>Total Reservations:</strong>
+            @(ViewBag.TotalReservations ?? 0)
+        </div>
+        <div class="col-md-3">
+            <strong><i class="bi bi-clock-history me-1"></i>Avg Rental Duration:</strong>
+            @((ViewBag.AverageRentalDuration as double?)?.ToString("N1") ?? "N/A") days
+        </div>
     </div>
 
     <hr />
 
+    <!-- Top Rented Vehicles -->
     <h4 class="mt-4"><i class="bi bi-car-front-fill me-2"></i>Top Rented Vehicles</h4>
     <div class="table-responsive">
         <table class="table table-bordered table-sm table-striped table-hover">
@@ -28,20 +42,28 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var v in ViewBag.MostRentedVehicles)
+                @if (ViewBag.MostRentedVehicles != null)
                 {
-                    <tr>
-                        <td>@v.Vehicle.Make @v.Vehicle.Model</td>
-                        <td>@v.Vehicle.Type</td>
-                        <td>@v.Vehicle.LicensePlate</td>
-                        <td>@v.TimesRented</td>
-                        <td>@v.Revenue.ToString("C2")</td>
-                    </tr>
+                    foreach (var v in ViewBag.MostRentedVehicles)
+                    {
+                        <tr>
+                            <td>@v.Vehicle.Make @v.Vehicle.Model</td>
+                            <td>@v.Vehicle.Type</td>
+                            <td>@v.Vehicle.LicensePlate</td>
+                            <td>@v.TimesRented</td>
+                            <td>@((v.Revenue as double?)?.ToString("C2") ?? "N/A")</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr><td colspan="5" class="text-center">No vehicle data available.</td></tr>
                 }
             </tbody>
         </table>
     </div>
 
+    <!-- Top Customers -->
     <h4 class="mt-4"><i class="bi bi-people-fill me-2"></i>Top Customers</h4>
     <div class="table-responsive">
         <table class="table table-bordered table-sm table-striped table-hover">
@@ -54,14 +76,21 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var c in ViewBag.CustomerActivity)
+                @if (ViewBag.CustomerActivity != null)
                 {
-                    <tr>
-                        <td>@c.Customer.FirstName @c.Customer.LastName</td>
-                        <td>@c.Customer.Email</td>
-                        <td>@c.Reservations</td>
-                        <td>@c.TotalSpent.ToString("C2")</td>
-                    </tr>
+                    foreach (var c in ViewBag.CustomerActivity)
+                    {
+                        <tr>
+                            <td>@c.Customer.FirstName @c.Customer.LastName</td>
+                            <td>@c.Customer.Email</td>
+                            <td>@c.Reservations</td>
+                            <td>@((c.TotalSpent as double?)?.ToString("C2") ?? "N/A")</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr><td colspan="4" class="text-center">No customer activity found.</td></tr>
                 }
             </tbody>
         </table>

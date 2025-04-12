@@ -61,14 +61,17 @@ namespace Vehicle_Rental_Management_System.Controllers
                 .OrderByDescending(c => c.TotalSpent)
                 .Take(5) // Only take top 5
                 .ToList();
-
-            ViewBag.TotalRevenue = totalRevenue;
-            ViewBag.TaxCollected = taxCollected;
-            ViewBag.TotalReservations = reservations.Count;
-            ViewBag.AverageRentalDuration = reservations.Average(r => (r.EndDate - r.StartDate).TotalDays);
-            ViewBag.MostRentedVehicles = mostRentedVehicles;
-            ViewBag.CustomerActivity = customerActivity;
-            ViewBag.Reservations = reservations;
+            if (reservations.Any())
+            {
+                ViewBag.TotalRevenue = totalRevenue;
+                ViewBag.TaxCollected = taxCollected;
+                ViewBag.TotalReservations = reservations.Count;
+                ViewBag.AverageRentalDuration = reservations.Average(r => (r.EndDate - r.StartDate).TotalDays);
+                ViewBag.MostRentedVehicles = mostRentedVehicles;
+                ViewBag.CustomerActivity = customerActivity;
+                ViewBag.Reservations = reservations;
+            }
+            
 
             return View();
         }
